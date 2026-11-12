@@ -45,10 +45,6 @@ end
 local CurInput = WindUI.GenerateGUID()
 
 UserInputService.InputBegan:Connect(function(Input, GameProcessed)
-	--[[if GameProcessed then
-		return
-	end]]
-
 	task.defer(function()
 		if
 			Input.UserInputType == Enum.UserInputType.MouseButton1
@@ -59,11 +55,10 @@ UserInputService.InputBegan:Connect(function(Input, GameProcessed)
 			end
 
 			WindUI.CurrentInput = CurInput
-			--print(CurInput)
-			--WindUI.InputStartedOnUI = false
 		end
 	end)
 end)
+
 UserInputService.InputEnded:Connect(function(Input, GameProcessed)
 	if Input.UserInputType == Enum.UserInputType.MouseButton1 or Input.UserInputType == Enum.UserInputType.Touch then
 		if WindUI.CurrentInput and WindUI.CurrentInput ~= CurInput then
@@ -82,18 +77,10 @@ if Package then
 end
 
 local KeySystem = require("./components/KeySystem")
-
 local Creator = WindUI.Creator
-
 local New = Creator.New
-
---local Tween = Creator.Tween
---local ServicesModule = WindUI.Services
-
 local Acrylic = require("./utils/Acrylic/Init")
-
 local ProtectGui = protectgui or (syn and syn.protect_gui) or function() end
-
 local GUIParent = gethui and gethui() or (CoreGui or LocalPlayer:WaitForChild("PlayerGui"))
 
 local UIScaleObj = New("UIScale", {
@@ -109,42 +96,16 @@ WindUI.ScreenGui = New("ScreenGui", {
 	ScreenInsets = "None",
 	DisplayOrder = -99999,
 }, {
-
-	New("Folder", {
-		Name = "Window",
-	}),
-	-- New("Folder", {
-	--     Name = "Notifications"
-	-- }),
-	-- New("Folder", {
-	--     Name = "Dropdowns"
-	-- }),
-	New("Folder", {
-		Name = "KeySystem",
-	}),
-	New("Folder", {
-		Name = "Popups",
-	}),
-	New("Folder", {
-		Name = "ToolTips",
-	}),
+	New("Folder", { Name = "Window" }),
+	New("Folder", { Name = "KeySystem" }),
+	New("Folder", { Name = "Popups" }),
+	New("Folder", { Name = "ToolTips" }),
 })
 
-WindUI.NotificationGui = New("ScreenGui", {
-	Name = "WindUI/Notifications",
-	Parent = GUIParent,
-	IgnoreGuiInset = true,
-})
-WindUI.DropdownGui = New("ScreenGui", {
-	Name = "WindUI/Dropdowns",
-	Parent = GUIParent,
-	IgnoreGuiInset = true,
-})
-WindUI.TooltipGui = New("ScreenGui", {
-	Name = "WindUI/Tooltips",
-	Parent = GUIParent,
-	IgnoreGuiInset = true,
-})
+WindUI.NotificationGui = New("ScreenGui", { Name = "WindUI/Notifications", Parent = GUIParent, IgnoreGuiInset = true })
+WindUI.DropdownGui = New("ScreenGui", { Name = "WindUI/Dropdowns", Parent = GUIParent, IgnoreGuiInset = true })
+WindUI.TooltipGui = New("ScreenGui", { Name = "WindUI/Tooltips", Parent = GUIParent, IgnoreGuiInset = true })
+
 ProtectGui(WindUI.ScreenGui)
 ProtectGui(WindUI.NotificationGui)
 ProtectGui(WindUI.DropdownGui)
@@ -153,19 +114,12 @@ ProtectGui(WindUI.TooltipGui)
 Creator.Init(WindUI)
 
 function WindUI:SetParent(parent)
-	if WindUI.ScreenGui then
-		WindUI.ScreenGui.Parent = parent
-	end
-	if WindUI.NotificationGui then
-		WindUI.NotificationGui.Parent = parent
-	end
-	if WindUI.DropdownGui then
-		WindUI.DropdownGui.Parent = parent
-	end
-	if WindUI.TooltipGui then
-		WindUI.TooltipGui.Parent = parent
-	end
+	if WindUI.ScreenGui then WindUI.ScreenGui.Parent = parent end
+	if WindUI.NotificationGui then WindUI.NotificationGui.Parent = parent end
+	if WindUI.DropdownGui then WindUI.DropdownGui.Parent = parent end
+	if WindUI.TooltipGui then WindUI.TooltipGui.Parent = parent end
 end
+
 math.clamp(WindUI.TransparencyValue, 0, 1)
 
 local Holder = WindUI.NotificationModule.Init(WindUI.NotificationGui)
@@ -173,7 +127,6 @@ local Holder = WindUI.NotificationModule.Init(WindUI.NotificationGui)
 function WindUI:Notify(Config)
 	Config.Holder = Holder.Frame
 	Config.Window = WindUI.Window
-	--Config.WindUI = WindUI
 	return WindUI.NotificationModule.New(Config)
 end
 
@@ -211,15 +164,19 @@ end
 function WindUI:GetThemes()
 	return WindUI.Themes
 end
+
 function WindUI:GetCurrentTheme()
 	return WindUI.Theme.Name
 end
+
 function WindUI:GetTransparency()
 	return WindUI.Transparent or false
 end
+
 function WindUI:GetWindowSize()
 	return WindUI.Window.UIElements.Main.Size
 end
+
 function WindUI:Localization(LocalizationConfig)
 	return WindUI.LocalizationModule:New(LocalizationConfig, Creator)
 end
@@ -264,12 +221,8 @@ function WindUI:Gradient(stops, props)
 		end
 	end
 
-	table.sort(colorSequence, function(a, b)
-		return a.Time < b.Time
-	end)
-	table.sort(transparencySequence, function(a, b)
-		return a.Time < b.Time
-	end)
+	table.sort(colorSequence, function(a, b) return a.Time < b.Time end)
+	table.sort(transparencySequence, function(a, b) return a.Time < b.Time end)
 
 	if #colorSequence < 2 then
 		table.insert(colorSequence, ColorSequenceKeypoint.new(1, colorSequence[1].Value))
@@ -296,7 +249,6 @@ function WindUI:Popup(PopupConfig)
 end
 
 WindUI.Themes = require("./themes/Init")(WindUI, Creator)
-
 Creator.Themes = WindUI.Themes
 
 WindUI:SetTheme("Dark")
@@ -306,9 +258,7 @@ function WindUI:CreateWindow(Config)
 	local CreateWindow = require("./components/window/Init")
 
 	if not RunService:IsStudio() and writefile then
-		if not isfolder("WindUI") then
-			makefolder("WindUI")
-		end
+		if not isfolder("WindUI") then makefolder("WindUI") end
 		if Config.Folder then
 			makefolder(Config.Folder)
 		else
@@ -326,10 +276,7 @@ function WindUI:CreateWindow(Config)
 	end
 
 	local CanLoadWindow = true
-
 	local Theme = WindUI.Themes[Config.Theme or "Dark"]
-
-	--WindUI.Theme = Theme
 	Creator.SetTheme(Theme)
 
 	local hwid = gethwid or function()
@@ -420,18 +367,6 @@ function WindUI:CreateWindow(Config)
 	if Config.Acrylic then
 		Acrylic.init()
 	end
-
-	-- function Window:ToggleTransparency(Value)
-	--     WindUI.Transparent = Value
-	--     WindUI.Window.Transparent = Value
-
-	--     Window.UIElements.Main.Background.BackgroundTransparency = Value and WindUI.TransparencyValue or 0
-	--     Window.UIElements.Main.Background.ImageLabel.ImageTransparency = Value and WindUI.TransparencyValue or 0
-	--     Window.UIElements.Main.Gradient.UIGradient.Transparency = NumberSequence.new{
-	--         NumberSequenceKeypoint.new(0, 1),
-	--         NumberSequenceKeypoint.new(1, Value and 0.85 or 0.7),
-	--     }
-	-- end
 
 	return Window
 end
